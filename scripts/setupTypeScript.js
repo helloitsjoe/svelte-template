@@ -116,7 +116,7 @@ const tsconfigPath = path.join(projectRoot, 'tsconfig.json');
 fs.writeFileSync(tsconfigPath, tsconfig);
 
 // Update jest.config.js
-const jestConfig = fs.readFileSync(atRoot('jest.config.js'));
+const jestConfig = fs.readFileSync(atRoot('jest.config.js'), 'utf8');
 jestConfig = jestConfig.replace(
   'svelte-jester',
   `['svelte-jester', { preprocess: true }]`
