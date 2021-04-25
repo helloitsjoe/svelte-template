@@ -56,7 +56,7 @@ fs.renameSync(beforeMainJSPath, afterMainTSPath);
 
 // Convert test file to .ts
 const beforeTestJSPath = atRoot('src', '__tests__', 'App.test.js');
-const afterTestTSPath = atRoot('src', '__tests__', 'App.test..ts');
+const afterTestTSPath = atRoot('src', '__tests__', 'App.test.ts');
 fs.renameSync(beforeTestJSPath, afterTestTSPath);
 
 // Switch the app.svelte file to use TS
