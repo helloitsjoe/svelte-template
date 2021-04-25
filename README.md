@@ -78,9 +78,9 @@ node scripts/setupTypeScript.js
 
 ### With GitHub Pages
 
-This template comes with a CI script to run tests and deploy `main` and branch
-builds to GitHub pages. You can run it immediately after cloning the template
-with:
+This template comes with a CI script to setup GitHub Actions to run tests and
+deploy `main` and branch builds to GitHub Pages. You can run it immediately
+after cloning the template with:
 
 ```bash
 node scripts/setupDeploy.js
