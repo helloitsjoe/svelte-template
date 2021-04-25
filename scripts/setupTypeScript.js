@@ -22,9 +22,7 @@ const projectRoot = argv[2] || path.join(__dirname, '..');
 const atRoot = (...args) => path.join(projectRoot, ...args);
 
 // Add deps to pkg.json
-const packageJSON = JSON.parse(
-  fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8')
-);
+const packageJSON = JSON.parse(fs.readFileSync(atRoot('package.json'), 'utf8'));
 packageJSON.devDependencies = Object.assign(packageJSON.devDependencies, {
   '@rollup/plugin-typescript': '^8.0.0',
   '@tsconfig/svelte': '^1.0.0',
@@ -43,42 +41,33 @@ packageJSON.scripts = Object.assign(packageJSON.scripts, {
 
 delete packageJSON.devDependencies['@babel/core'];
 delete packageJSON.devDependencies['@babel/preset-env'];
+delete packageJSON.devDependencies['babel-jest'];
 
 // Write the package JSON
 fs.writeFileSync(
-  path.join(projectRoot, 'package.json'),
+  atRoot('package.json'),
   JSON.stringify(packageJSON, null, '  ')
 );
 
 // mv src/main.js to main.ts - note, we need to edit rollup.config.js for this too
-const beforeMainJSPath = path.join(projectRoot, 'src', 'main.js');
-const afterMainTSPath = path.join(projectRoot, 'src', 'main.ts');
+const beforeMainJSPath = atRoot('src', 'main.js');
+const afterMainTSPath = atRoot('src', 'main.ts');
 fs.renameSync(beforeMainJSPath, afterMainTSPath);
 
 // Convert test file to .ts
-const beforeTestJSPath = path.join(
-  projectRoot,
-  'src',
-  '__tests__',
-  'App.test.js'
-);
-const afterTestTSPath = path.join(
-  projectRoot,
-  'src',
-  '__tests__',
-  'App.test..ts'
-);
+const beforeTestJSPath = atRoot('src', '__tests__', 'App.test.js');
+const afterTestTSPath = atRoot('src', '__tests__', 'App.test..ts');
 fs.renameSync(beforeTestJSPath, afterTestTSPath);
 
 // Switch the app.svelte file to use TS
-const appSveltePath = path.join(projectRoot, 'src', 'App.svelte');
+const appSveltePath = atRoot('src', 'App.svelte');
 let appFile = fs.readFileSync(appSveltePath, 'utf8');
 appFile = appFile.replace('<script>', '<script lang="ts">');
 appFile = appFile.replace('export let name;', 'export let name: string;');
 fs.writeFileSync(appSveltePath, appFile);
 
 // Edit rollup config
-const rollupConfigPath = path.join(projectRoot, 'rollup.config.js');
+const rollupConfigPath = atRoot('rollup.config.js');
 let rollupConfig = fs.readFileSync(rollupConfigPath, 'utf8');
 
 // Edit imports
@@ -112,7 +101,7 @@ const tsconfig = `{
   "include": ["src/**/*"],
   "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
 }`;
-const tsconfigPath = path.join(projectRoot, 'tsconfig.json');
+const tsconfigPath = atRoot('tsconfig.json');
 fs.writeFileSync(tsconfigPath, tsconfig);
 
 // Update jest.config.js
@@ -153,9 +142,9 @@ if (!argv[2]) {
 }
 
 // Adds the extension recommendation
-fs.mkdirSync(path.join(projectRoot, '.vscode'), { recursive: true });
+fs.mkdirSync(atRoot('.vscode'), { recursive: true });
 fs.writeFileSync(
-  path.join(projectRoot, '.vscode', 'extensions.json'),
+  atRoot('.vscode', 'extensions.json'),
   `{
   "recommendations": ["svelte.svelte-vscode"]
 }
@@ -164,7 +153,7 @@ fs.writeFileSync(
 
 console.log('Converted to TypeScript.');
 
-if (fs.existsSync(path.join(projectRoot, 'node_modules'))) {
+if (fs.existsSync(atRoot('node_modules'))) {
   console.log(
     '\nYou will need to re-run your dependency manager to get started.'
   );
