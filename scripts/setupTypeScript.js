@@ -68,7 +68,7 @@ const afterTestTSPath = path.join(
   '__tests__',
   'App.test..ts'
 );
-fs.renameSync(beforeMainJSPath, afterMainTSPath);
+fs.renameSync(beforeTestJSPath, afterTestTSPath);
 
 // Switch the app.svelte file to use TS
 const appSveltePath = path.join(projectRoot, 'src', 'App.svelte');
