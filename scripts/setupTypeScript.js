@@ -109,7 +109,8 @@ const tsconfigPath = atRoot('tsconfig.json');
 fs.writeFileSync(tsconfigPath, tsconfig);
 
 // Update jest.config.js
-let jestConfig = fs.readFileSync(atRoot('jest.config.js'), 'utf8');
+const jestConfigPath = atRoot('jest.config.js');
+let jestConfig = fs.readFileSync(jestConfigPath, 'utf8');
 jestConfig = jestConfig.replace(
   'svelte-jester',
   `['svelte-jester', { preprocess: true }]`
@@ -122,6 +123,7 @@ jestConfig = jestConfig.replace(
   `moduleFileExtensions: ['js', 'svelte']`,
   `preset: 'ts-jest',\n\tmoduleFileExtensions: ['js', 'ts', 'svelte']`
 );
+fs.writeFileSync(jestConfigPath, jestConfig);
 
 // Delete Babel
 fs.unlinkSync(atRoot('.babelrc.js'));
