@@ -33,3 +33,22 @@ const deployBranch = deployYml({ branch: true });
 fs.mkdirSync(workflowsDir, { recursive: true });
 fs.writeFileSync(path.join(workflowsDir, 'deployMain.yml'), deployMain);
 fs.writeFileSync(path.join(workflowsDir, 'deployBranch.yml'), deployBranch);
+
+// DUPLICATE in setupTypeScript.js
+// Delete this script, but not during testing
+if (!argv[2]) {
+  // Remove the script
+  fs.unlinkSync(path.join(__filename));
+
+  // Check for Mac's DS_store file, and if it's the only one left remove it
+  const remainingFiles = fs.readdirSync(path.join(__dirname));
+  if (remainingFiles.length === 1 && remainingFiles[0] === '.DS_store') {
+    fs.unlinkSync(path.join(__dirname, '.DS_store'));
+  }
+
+  // Check if the scripts folder is empty
+  if (fs.readdirSync(path.join(__dirname)).length === 0) {
+    // Remove the scripts folder
+    fs.rmdirSync(path.join(__dirname));
+  }
+}

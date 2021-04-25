@@ -5,7 +5,7 @@
   <script lang="ts">
   	export let name: string;
   </script>
- 
+
   As well as validating the code for CI.
   */
 
@@ -19,15 +19,19 @@ const { argv } = require("process")
 
 const projectRoot = argv[2] || path.join(__dirname, "..")
 
+const atRoot = (...args) => path.join(projectRoot, ...args);
+
 // Add deps to pkg.json
 const packageJSON = JSON.parse(fs.readFileSync(path.join(projectRoot, "package.json"), "utf8"))
 packageJSON.devDependencies = Object.assign(packageJSON.devDependencies, {
+  "@rollup/plugin-typescript": "^8.0.0",
+  "@tsconfig/svelte": "^1.0.0"
+  "@types/jest": "^26.0.0",
   "svelte-check": "^1.0.0",
   "svelte-preprocess": "^4.0.0",
-  "@rollup/plugin-typescript": "^8.0.0",
   "typescript": "^4.0.0",
+  "ts-jest": "^26.0.0",
   "tslib": "^2.0.0",
-  "@tsconfig/svelte": "^1.0.0"
 })
 
 // Add script for checking
@@ -35,12 +39,20 @@ packageJSON.scripts = Object.assign(packageJSON.scripts, {
   "validate": "svelte-check"
 })
 
+delete packageJSON.devDependencies['@babel/core'];
+delete packageJSON.devDependencies['@babel/preset-env'];
+
 // Write the package JSON
 fs.writeFileSync(path.join(projectRoot, "package.json"), JSON.stringify(packageJSON, null, "  "))
 
 // mv src/main.js to main.ts - note, we need to edit rollup.config.js for this too
 const beforeMainJSPath = path.join(projectRoot, "src", "main.js")
 const afterMainTSPath = path.join(projectRoot, "src", "main.ts")
+fs.renameSync(beforeMainJSPath, afterMainTSPath)
+
+// Convert test file to .ts
+const beforeTestJSPath = path.join(projectRoot, "src", "__tests__", "App.test.js")
+const afterTestTSPath = path.join(projectRoot, "src", "__tests__", "App.test..ts")
 fs.renameSync(beforeMainJSPath, afterMainTSPath)
 
 // Switch the app.svelte file to use TS
@@ -85,6 +97,16 @@ const tsconfig = `{
 const tsconfigPath =  path.join(projectRoot, "tsconfig.json")
 fs.writeFileSync(tsconfigPath, tsconfig)
 
+// Update jest.config.js
+const jestConfig = fs.readFileSync(projectRoot, 'jest.config.js');
+jestConfig = jestConfig.replace('svelte-jester', `['svelte-jester', { preprocess: true }]`);
+jestConfig = jestConfig.replace(`'^.+\\.js$': 'babel-jest'`, `'^.+\\.(js|ts)$': 'ts-jest'`)
+jestConfig = jestConfig.replace(`moduleFileExtensions: ['js', 'svelte']`, `preset: 'ts-jest',\n\tmoduleFileExtensions: ['js', 'ts', 'svelte']`)
+
+// Delete Babel
+fs.unlinkSync(atRoot('.babelrc.js'));
+
+// DUPLICATE in setupDeploy.js
 // Delete this script, but not during testing
 if (!argv[2]) {
   // Remove the script
