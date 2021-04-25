@@ -97,7 +97,11 @@ fs.writeFileSync(rollupConfigPath, rollupConfig);
 // Add TSConfig
 const tsconfig = `{
   "extends": "@tsconfig/svelte/tsconfig.json",
-
+  "compilerOptions": {
+    // For lazy loading
+    "module": "esnext",
+    "types": ["svelte", "jest"]
+  },
   "include": ["src/**/*"],
   "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
 }`;
