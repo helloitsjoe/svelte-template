@@ -36,7 +36,7 @@ fs.writeFileSync(path.join(workflowsDir, 'deployBranch.yml'), deployBranch);
 
 // DUPLICATE in setupTypeScript.js
 // Delete this script, but not during testing
-if (!argv[2]) {
+if (!process.argv[2]) {
   // Remove the script
   fs.unlinkSync(path.join(__filename));
 
